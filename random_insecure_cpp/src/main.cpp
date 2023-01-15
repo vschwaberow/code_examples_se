@@ -105,6 +105,4 @@ int main()
         std::cout << "Seed not found" << std::endl;
     }
     return 0;
-
-    return 0;
 }
