@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.10)
+project(random_insecure)
+
+add_executable(random_insecure src/main.cpp)
+
