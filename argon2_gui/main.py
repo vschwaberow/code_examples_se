@@ -7,22 +7,28 @@ class Argon:
     def __init__(self):
         self.password = "volker"
         self.hash = ""
-        self.number = 1
-        self.time_cost = 1
-        self.memory_cost = 32
+        self.time_cost = 3
+        self.memory_cost = 65536
         self.parallelism = 4
-        self.hash_length = 128
+        self.hash_length = 32
+        self.salt_length = 16
+        self.type = argon2.Type.D
 
     def generate_hash(self):
         try:
             self.password = str(self.password)
-            self.number = int(self.number)
             self.time_cost = int(self.time_cost)
             self.memory_cost = int(self.memory_cost)
             self.parallelism = int(self.parallelism)
             self.hash_length = int(self.hash_length)
-            self.hash = argon2.PasswordHasher(self.time_cost, self.memory_cost,
-                                              self.parallelism, self.hash_length).hash(self.password)
+
+            self.hash = argon2.PasswordHasher(
+                time_cost=self.time_cost,
+                memory_cost=self.memory_cost,
+                parallelism=self.parallelism,
+                hash_len=self.hash_length,
+                type=self.type,
+            ).hash(self.password)
         except Exception as e:
             ui.notify("Error occured: " + str(e))
 
@@ -58,6 +64,12 @@ def main():
             argon, 'parallelism').style(style + "width: 50%;")
         hash_length = ui.number("Hash Length", format='%d').bind_value(
             argon, 'hash_length').style(style + "width: 40%;")
+    with ui.row().style(row_style):
+        salt_length = ui.number("Salt Length", format='%d').bind_value(
+            argon, 'salt_length').style(style + "width: 50%;")
+        ui.label("Type").style(style + "width: 10%;")
+        type = ui.select({argon2.Type.D: 'argon2d', argon2.Type.I: 'argon2i', argon2.Type.ID: 'argon2id'}).bind_value(
+            argon, 'type').style(style + "width: 30%;")
 
     with ui.row().style(row_style):
         ui.input("Password", on_change=argon.event_change_password).bind_value(
